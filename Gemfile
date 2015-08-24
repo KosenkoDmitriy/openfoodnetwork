@@ -102,7 +102,9 @@ end
 
 group :test do
   gem 'webmock'
-
+  #for uml diagrams
+  gem 'railroady'
+  gem "rails-erd"
   # See spec/spec_helper.rb for instructions
   #gem 'perftools.rb'
 end
@@ -117,4 +119,7 @@ group :development do
   gem 'guard-zeus'
   gem 'guard-rspec'
   gem 'parallel_tests'
+  #for uml diagrams
+  gem 'railroady'
+  gem "rails-erd"
 end
