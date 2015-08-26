@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby "1.9.3"
+ruby "2.0.0"
 
 gem 'rails', '3.2.21'
 gem 'rails-i18n', '~> 3.0.0'
@@ -103,7 +103,9 @@ end
 
 group :test do
   gem 'webmock'
-
+  #for uml diagrams
+  gem 'railroady'
+  gem "rails-erd"
   # See spec/spec_helper.rb for instructions
   #gem 'perftools.rb'
 end
@@ -118,4 +120,7 @@ group :development do
   gem 'guard-zeus'
   gem 'guard-rspec'
   gem 'parallel_tests'
+  #for uml diagrams
+  gem 'railroady'
+  gem "rails-erd"
 end

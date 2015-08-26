@@ -39,3 +39,50 @@ states_108:
   country_id: "12"
   id: "108"
   abbr: WA
+#South Africa Spree::Country.find_by_iso("ZA") #<Spree::Country id: 174, iso_name: "SOUTH AFRICA", iso: "ZA", iso3: "ZAF", name: "South Africa", numcode: 710, states_required: true>
+#states/provinces of South Africa from here https://en.wikipedia.org/wiki/ISO_3166-2:ZA
+states_109:
+  name: "Eastern Cape"
+  country_id: "174"
+  id: "109"
+  abbr: "ZA-EC"
+states_110:
+  name: "Free State"
+  country_id: "174"
+  id: "110"
+  abbr: "ZA-FS"
+states_111:
+  name: "Gauteng"
+  country_id: "174"
+  id: "111"
+  abbr: "ZA-GT"
+states_112:
+  name: "KwaZulu-Natal"
+  country_id: "174"
+  id: "112"
+  abbr: "ZA-NL"
+states_113:
+  name: "Limpopo"
+  country_id: "174"
+  id: "113"
+  abbr: "ZA-LP"
+states_114:
+  name: "Mpumalanga"
+  country_id: "174"
+  id: "114"
+  abbr: "ZA-MP"
+states_115:
+  name: "Northern Cape"
+  country_id: "174"
+  id: "115"
+  abbr: "ZA-NC"
+states_116:
+  name: "North West"
+  country_id: "174"
+  id: "116"
+  abbr: "ZA-NW"
+states_117:
+  name: "Western Cape"
+  country_id: "174"
+  id: "117"
+  abbr: "ZA-WC"
