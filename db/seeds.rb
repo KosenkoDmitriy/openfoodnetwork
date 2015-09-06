@@ -8,9 +8,6 @@ unless Spree::Country.find_by_iso('ZA')
   Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
 end
 
-
-
-
 # -- States and Suburbs
 require_relative './suburb_seeds'
 SuburbSeeder.seed_suburbs #unless Suburb.find_by_name("Dayton")

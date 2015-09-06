@@ -2,11 +2,44 @@ require 'net/http'
 
 module SuburbSeeder
   def self.seed_suburbs
-    #seed_au() unless Suburb.find_by_name("Dayton") # australia
+    # test_seed()
+    # return
+    seed_au() unless Suburb.find_by_name("Dayton") # australia
     seed_za() # south africa
   end
 
+  def self.test_seed
+    country = Spree::Country.find_by_iso('ZA')
+    state_name = "Gauteng"
+    state_abbr = "ZA-GT"
+    state = Spree::State.where(name: state_name).first_or_create(abbr: state_abbr, country_id: country.id)
+    city = "Johannesburg"
+    suburb = "Airdlin"
+    # save_json_to_file(country, state, city, suburb) #request to Google Geocode API
+    x,y,postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+    puts "+++ got lat:#{x} ln:#{y} postal code:#{postal_code}"
+    # item = Suburb.where(name: suburb).first_or_create.update_attributes(postcode:postal_code.to_s, state_id: state.id, latitude: x, longitude: y)
+    item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
+    item.postcode = postal_code
+    item.state = state
+    item.latitude = x
+    item.longitude = y
+    item.save
+    puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
+
+  end
+
   def self.seed_za
+    # # get suburb title list from https://en.wikipedia.org/wiki/Category:Johannesburg_Region_A (as example) via javascript script from a console.
+    # function get_suburbs() {
+    # 	var arr = "";
+    # 	$( ".mw-category-group a" ).each(function() {
+    # 	 arr+=$( this ).attr( "title" )+';';
+    #  });
+    # 	return arr;
+    # }
+    # str = get_suburbs()
+
     if Spree::Country.exists?(iso: 'ZA')
       country = Spree::Country.find_by_iso('ZA')
       puts "[db:seed] Seeding state/province of the South Africa"
@@ -34,73 +67,22 @@ module SuburbSeeder
         city = item[:city]
         suburbs = item[:suburbs]
         suburbs.each do |suburb|
+          # save_json_to_file(country, state, city, suburb)
           x,y,postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
-					item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
-					puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
-				end
-      end
-    else
-      puts "[db:seed] error:\ncountry 'South Africa' not found"
-    end
-  end
-
-  def self.seed_za_full
-    # start states
-    if Spree::Country.exists?(iso: 'ZA')
-      country = Spree::Country.find_by_iso('ZA')
-      puts "[db:seed] Seeding state/province of the South Africa"
-      [
-          ['Eastern Cape', 'ZA-EC'],
-          ['Free State', 'ZA-FS'],
-          ['Gauteng', 'ZA-GT'],
-          ['KwaZulu-Natal', 'ZA-NL'],
-          ['Limpopo', 'ZA-LP'],
-          ['Mpumalanga', 'ZA-MP'],
-          ['Northern Cape', 'ZA-NC'],
-          ['North West', 'ZA-NW'],
-          ['Western Cape', 'ZA-WC']
-      ].each do |state_from_hash|
-        state_name = state_from_hash[0]
-        state = Spree::State.create!({name: state_from_hash[0], abbr: state_from_hash[1], country: country}, without_protection: true)
-        cities_and_suburbs = [
-            {city: "johannesburg", suburbs: get_suburbs_of_johannesburg()},
-            {city: "kempton park", suburbs: get_suburbs_of_kempton_park_gauteng()},
-            {city: "pretoria", suburbs: get_suburbs_of_pretoria()},
-            {city: "vereeniging", suburbs: get_suburbs_of_vereeniging()},
-            {city: "durban", suburbs: get_suburbs_of_durban()},
-            {city: "centurion", suburbs: get_suburbs_of_centurion_gauteng()},
-            {city: "bloemfontein", suburbs: get_suburbs_of_bloemfontein()},
-            {city: "cape town", suburbs: get_suburbs_of_cape_town()},
-        ]
-
-        cities_and_suburbs.each do |city_suburb|
-          city = city_suburb[:city]
-          suburbs = city_suburb[:suburbs]
-          suburbs.each do |suburb|
-            lat, lng, postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
-            #Suburb.find_or_create_by(postal_code, suburb, state.id, lat, lng) #rails 4
-            Suburb.create!({postcode: postal_code, name: suburb, state_id: state.id, latitude:lat, longitude:lng}, without_protection: true)
-            # INSERT INTO suburbs (postcode,name,state_id,latitude,longitude) VALUES
-          end
+          puts "+++ got lat:#{x} ln:#{y} postal code:#{postal_code}"
+          # item = Suburb.where(name: suburb).first_or_create.update_attributes(postcode:postal_code.to_s, state_id: state.id, latitude: x, longitude: y)
+          item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
+          item.postcode = postal_code
+          item.state = state
+          item.latitude = x
+          item.longitude = y
+          item.save
+          puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
         end
       end
     else
       puts "[db:seed] error:\ncountry 'South Africa' not found"
     end
-    # end states
-
-    # start suburbs
-
-    # # get suburb title list from https://en.wikipedia.org/wiki/Category:Johannesburg_Region_A (as example) via javascript script.
-    # function get_suburbs() {
-    # 	var arr = "";
-    # 	$( ".mw-category-group a" ).each(function() {
-    # 	 arr+=$( this ).attr( "title" )+';';
-    #  });
-    # 	return arr;
-    # }
-    # str = get_suburbs()
-
   end
 
   def self.suburbs_all_from_za
@@ -150,50 +132,59 @@ module SuburbSeeder
     return "Rondebosch;Wynberg‎;Newlands;".split(";")
   end
 
-  def self.get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
-    # url = URI.encode("http://maps.googleapis.com/maps/api/geocode/json?address=#{suburb}&components=administrative_area:#{city}|country:#{country.iso}")
+  def self.save_json_to_file(country, state, city, suburb)
     url = URI.encode("http://maps.googleapis.com/maps/api/geocode/json?address=#{suburb}&components=administrative_area:|country:#{country.iso}")
     puts url
     uri = URI.parse(url)
 
     http = Net::HTTP.new(uri.host, uri.port)
-    # http.use_ssl = true
     req = Net::HTTP::Get.new(uri.request_uri)
     res = http.request req
-    # puts "req:\n#{req}"
-    #raw_response = http.request req
-    #parsed_response = JSON(raw_response)
 
-
-    #req = Net::HTTP::Get.new(url.to_s)
-    #res = Net::HTTP.start(url.host, url.port) { |http|
-    #  http.request(req)
-    #}
-
-    lat = lng = 0
-    postal_code = ""
     if res.code == "200"
       response = res.try(:body) || ""
       # puts "response body:\n#{response}"
+      path = get_path_by_suburb_name suburb
+      File.open(path,"w") do |f|
+        json = response.to_json
+        f.write(json)
+        puts "saved to #{path} \n#{json}"
+      end
+    else
+      puts "error response #{response.code}"
+    end
+  end
 
+  def self.get_path_by_suburb_name name
+    path = File.join(Rails.root, "db", "default", "suburbs", "#{name.downcase}.json")
+    return path
+  end
+
+  def self.get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+    path = get_path_by_suburb_name suburb
+    postal_code = ""
+    lat = lng = 0
+    if File.exists?(path)
+      response = File.read(path)
       isCreate = false
       begin
-        obj = ActiveSupport::JSON.decode(response)
+        json = ActiveSupport::JSON.decode(response)
+        obj = ActiveSupport::JSON.decode(json)
         error_message = obj["error_message"] if obj.present? and obj["error_message"]
         results = obj["results"] if obj.present? and obj["results"].present?
         if error_message.present?
           puts "error: #{error_message}"
         end
-        if results.blank? or results.count == 0
+        if results.blank?# or results.count == 0
           puts "empty results: #{results}"
           return
         end
-        lat = obj["results"].first["geometry"]["location"]["lat"] if obj.present? and obj["results"].present? and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lat"]
-        lng = obj["results"].first["geometry"]["location"]["lng"] if obj.present? and obj["results"].present? and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lng"]
-        addresses = obj["results"].first["address_components"] if obj.present? and obj["results"].present? and obj["results"].first["address_components"]
-        addresses2 = obj["results"].first["address_components"] if obj.present? and obj["results"].present?
+        # puts obj
+        lat = obj["results"].first["geometry"]["location"]["lat"] if obj.present? and obj["results"] and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lat"]
+        lng = obj["results"].first["geometry"]["location"]["lng"] if obj.present? and obj["results"] and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lng"]
+        addresses = obj["results"].first["address_components"] if obj.present? and obj["results"] and obj["results"].first["address_components"]
         puts "\nSuburb: #{postal_code} #{suburb} #{city} #{state.try(:name)} #{lat} #{lng}"
-				puts "+addresses: #{addresses}"
+        # puts "+addresses: #{addresses}"
         if addresses.present? && addresses.any?
           addresses.each do |address|
             addreess_name = address["short_name"] if address["short_name"]
@@ -219,11 +210,11 @@ module SuburbSeeder
       end
 
     else
-      puts "error response #{response.code}"
+      puts "error read file: #{path}"
       # return
     end
 
-    return lat, lng, postal_code
+    return lat, lng, postal_code.to_s
   end
 
   def self.seed_au
