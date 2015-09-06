@@ -38,3 +38,5 @@ NERD_tree*
 coverage
 libpeerconnection.log
 /config/application.yml
+
+public/assets

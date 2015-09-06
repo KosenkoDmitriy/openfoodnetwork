@@ -632,6 +632,3 @@ DEPENDENCIES
   unicorn-rails
   webmock
   whenever
-
-BUNDLED WITH
-   1.10.6

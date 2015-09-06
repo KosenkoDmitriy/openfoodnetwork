@@ -1,18 +1,265 @@
+require 'net/http'
+
 module SuburbSeeder
-	def self.seed_suburbs
-		state_id_act = Spree::State.where(abbr: "ACT").first.id
-		state_id_nsw = Spree::State.where(abbr: "NSW").first.id
-		state_id_nt = Spree::State.where(abbr: "NT").first.id
-		state_id_qld = Spree::State.where(abbr: "QLD").first.id
-		state_id_sa = Spree::State.where(abbr: "SA").first.id
-		state_id_tas = Spree::State.where(abbr: "Tas").first.id
-		state_id_vic = Spree::State.where(abbr: "Vic").first.id
-		state_id_wa = Spree::State.where(abbr: "WA").first.id
+  def self.seed_suburbs
+    #seed_au() unless Suburb.find_by_name("Dayton") # australia
+    seed_za() # south africa
+  end
 
-		connection = ActiveRecord::Base.connection()
+  def self.seed_za
+    if Spree::Country.exists?(iso: 'ZA')
+      country = Spree::Country.find_by_iso('ZA')
+      puts "[db:seed] Seeding state/province of the South Africa"
 
-		puts "-- Seeding Australian suburbs"
-		connection.execute("
+      # Cape Town, Johannesburg, Pretoria, Durban, Bloemfontein
+      # Centurion, Kempton Park, Vereeniging
+      items = [
+          {state: "Gauteng", state_abbr: "ZA-GT", city: "Johannesburg", suburbs: get_suburbs_of_johannesburg()},
+          {state: "Gauteng", state_abbr: "ZA-GT", city: "Pretoria", suburbs: get_suburbs_of_pretoria()},
+          {state: "KwaZulu-Natal", state_abbr: "ZA-NL", city: "Durban", suburbs: get_suburbs_of_durban()},
+          {state: "Free State", state_abbr: "ZA-FS", city: "Bloemfontein", suburbs: get_suburbs_of_bloemfontein()},
+          {state: "Western Cape", state_abbr: "ZA-WC", city: "Cape Town", suburbs: get_suburbs_of_cape_town()},
+          {state: "Gauteng", state_abbr: "ZA-GT", city: "Centurion", suburbs: get_suburbs_of_centurion_gauteng()},
+          {state: "Gauteng", state_abbr: "ZA-GT", city: "Kempton Park", suburbs: get_suburbs_of_kempton_park_gauteng()},
+          {state: "Gauteng", state_abbr: "ZA-GT", city: "Vereeniging", suburbs: get_suburbs_of_vereeniging()},
+      ]
+
+      items.each do |item|
+        state_name = item[:state]
+        state_abbr = item[:state_abbr]
+				# state = Spree::State.where(name: state_name, abbr: state_abbr, country_id: country.id).first_or_create(without_protection: true)
+
+				state = Spree::State.where(name: state_name).first_or_create(abbr: state_abbr, country_id: country.id)
+				puts "state: #{state.try(:name)} #{state.try(:abbr)} #{state.try(:country_id)}"
+        city = item[:city]
+        suburbs = item[:suburbs]
+        suburbs.each do |suburb|
+          x,y,postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+					item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
+					puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
+				end
+      end
+    else
+      puts "[db:seed] error:\ncountry 'South Africa' not found"
+    end
+  end
+
+  def self.seed_za_full
+    # start states
+    if Spree::Country.exists?(iso: 'ZA')
+      country = Spree::Country.find_by_iso('ZA')
+      puts "[db:seed] Seeding state/province of the South Africa"
+      [
+          ['Eastern Cape', 'ZA-EC'],
+          ['Free State', 'ZA-FS'],
+          ['Gauteng', 'ZA-GT'],
+          ['KwaZulu-Natal', 'ZA-NL'],
+          ['Limpopo', 'ZA-LP'],
+          ['Mpumalanga', 'ZA-MP'],
+          ['Northern Cape', 'ZA-NC'],
+          ['North West', 'ZA-NW'],
+          ['Western Cape', 'ZA-WC']
+      ].each do |state_from_hash|
+        state_name = state_from_hash[0]
+        state = Spree::State.create!({name: state_from_hash[0], abbr: state_from_hash[1], country: country}, without_protection: true)
+        cities_and_suburbs = [
+            {city: "johannesburg", suburbs: get_suburbs_of_johannesburg()},
+            {city: "kempton park", suburbs: get_suburbs_of_kempton_park_gauteng()},
+            {city: "pretoria", suburbs: get_suburbs_of_pretoria()},
+            {city: "vereeniging", suburbs: get_suburbs_of_vereeniging()},
+            {city: "durban", suburbs: get_suburbs_of_durban()},
+            {city: "centurion", suburbs: get_suburbs_of_centurion_gauteng()},
+            {city: "bloemfontein", suburbs: get_suburbs_of_bloemfontein()},
+            {city: "cape town", suburbs: get_suburbs_of_cape_town()},
+        ]
+
+        cities_and_suburbs.each do |city_suburb|
+          city = city_suburb[:city]
+          suburbs = city_suburb[:suburbs]
+          suburbs.each do |suburb|
+            lat, lng, postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+            #Suburb.find_or_create_by(postal_code, suburb, state.id, lat, lng) #rails 4
+            Suburb.create!({postcode: postal_code, name: suburb, state_id: state.id, latitude:lat, longitude:lng}, without_protection: true)
+            # INSERT INTO suburbs (postcode,name,state_id,latitude,longitude) VALUES
+          end
+        end
+      end
+    else
+      puts "[db:seed] error:\ncountry 'South Africa' not found"
+    end
+    # end states
+
+    # start suburbs
+
+    # # get suburb title list from https://en.wikipedia.org/wiki/Category:Johannesburg_Region_A (as example) via javascript script.
+    # function get_suburbs() {
+    # 	var arr = "";
+    # 	$( ".mw-category-group a" ).each(function() {
+    # 	 arr+=$( this ).attr( "title" )+';';
+    #  });
+    # 	return arr;
+    # }
+    # str = get_suburbs()
+
+  end
+
+  def self.suburbs_all_from_za
+    suburbs_string = get_suburbs_of_cape_town + get_suburbs_of_johannesburg + get_suburbs_of_kempton_park_gauteng + get_suburbs_of_pretoria +
+        get_suburbs_of_vereeniging + get_suburbs_of_durban + get_suburbs_of_centurion_gauteng + get_suburbs_of_bloemfontein
+    return suburbs_string.split(";")
+  end
+
+  def self.get_suburbs_of_johannesburg
+    johannesburg_region_a = "Airdlin;Barbeque Downs;Barbeque Downs Business Park;Bloubosrand;Blue Hills, Gauteng;Broadacres, Gauteng;Buccleuch, Gauteng;Carlswald;Chartwell, Gauteng;Country View;Crowthorne, Gauteng;Dainfern;Diepsloot;Ebony Park;Erand;Farmall, Gauteng;Glen Austin;Halfway Gardens;Halfway House Estate;Headway Hill;Houtkoppen;Inadan;Ivory Park;Kya Sand;Kya Sands, Johannesburg;Kyalami Agricultural Holdings;Kyalami Business Park;Kyalami Estates;Maroeladal;Midrand;Midridge Park;Millgate Farm;Nietgedacht;Noordwyk;North Champagne Estates;Paulshof;Plooysville;Rabie Ridge;Randjespark;Salfred;Sunninghill, Gauteng;Sunrella;Trevallyn, Gauteng;Trojan, Gauteng;Vorna Valley;Willaway;Witkoppen;"
+    johannesburg_region_b = "Albertskroon;Albertville, Gauteng;Aldara Park;Amalgam, Gauteng;Auckland Park;Berario;Beverley Gardens;Blackheath, Gauteng;Blairgowrie, Gauteng;Bordeaux, Gauteng;Bosmont;Brixton, Gauteng;Bryanbrink;Bryanston West, Gauteng;Clynton;Country Life Park;Cowdray Park, Gauteng;Craighall;Craighall Park;Cramerview;Cresta, Gauteng;Crown, Gauteng;Daniel Brink Park;Darrenwood;Dunkeld West;Dunkeld, Gauteng;Emmarentia;Ferndale, Gauteng;Florida Glen;Fontainebleau, Gauteng;Forest Town, Gauteng;Glenadrienne;Gleniffer;Greenside, Gauteng;Greymont;Hurlingham Gardens;Hurlingham, Gauteng;Hyde Park, Gauteng;Jan Hofmeyer, Gauteng;Kensington B;Linden, Gauteng;Lyme Park, Gauteng;Malanshof;Melville, Gauteng;Mill Hill, Gauteng;Newlands, Gauteng;Northcliff;Oerder Park;Osummit;Parkhurst, Gauteng;Parkmore;Parktown North;Parkview, Gauteng;Praegville;President Ridge;Randburg;Randpark;Randpark Ridge;River Bend, Gauteng;Rosebank, Gauteng;Ruiterhof;Sandhurst, Gauteng;Solridge;Sophiatown;Strijdompark;Vandia Grove;Vrededorp, Gauteng;Westcliff, Gauteng;Willowild;"
+    johannesburg_region_c = "Bromhof;Bush Hill, Gauteng;Constantia Kloof;Douglasdale, Gauteng;Fairland, Gauteng;Florida Hills;Florida, Gauteng;Johannesburg North;Jukskei Park;Northgate, Gauteng;Northriding;Olivedale, Gauteng;Roodepoort;Weltevredenpark;Zandspruit;"
+    johannesburg_region_d = "Diepkloof;Dobsonville;Doornkop;Kliptown;Meadowlands, Gauteng;Noordgesig;Orlando, Soweto;Phiri, Soweto;Protea Glen;Soweto;Zola, South Africa;"
+    johannesburg_region_e = "Abbotsford, Johannesburg;Alexandra, Gauteng;Atholhurst;Atholl Gardens;Atholl, Gauteng;Bagleyston;Benmore Gardens;Birdhaven, Gauteng;Birnam, Gauteng;Bramley North;Bramley Park;Bramley, Gauteng;Bruma Lake Flea Market, Gauteng;Bruma, Gauteng;Bryanston East, Gauteng;Bryanston, Gauteng;Cheltondale;Chislehurston;Cyrildene;Dalecross;Dennehof, Gauteng;Dunhill, Gauteng;Edenburg, Gauteng;Elton Hill;Epsom Downs, Gauteng;Fairway, Gauteng;Fairwood, Gauteng;Fellside, Gauteng;Forbesdale;Fourways;Gallo Manor;The Gardens, Gauteng;Glen Athol;Glenhazel;Gresswold;Hawkins Estate;Highlands North, Gauteng;Houghton Estate;Hurl Park;Illovo, Gauteng;Inanda, Gauteng;Kentview, Gauteng;Kew, Gauteng;Khyber Rock;Killarney, Gauteng;Klevehill Park;Littlefillan;Lone Hill;Magalies View;Magaliessig;Marlboro Gardens;Marlboro, Gauteng;Maryvale, Gauteng;Melrose Estate;Melrose North;Melrose, Gauteng;Moodie Hill;Morningside Manor;Morningside, Gauteng;Mountain View, Gauteng;Norscot;Northern Acres, Gauteng;Norwood, Gauteng;Oaklands, Gauteng;Orange Grove, Gauteng;Percelia Estate;Petervale;Raedene Estate;Raumarais Park;River Club, Gauteng;Riviera, Gauteng;Rivonia;Sandown, Gauteng;Sandton;Savoy Estate;Saxonwold;Simba, Gauteng;Strathavon;Sunningdale Ridge;Sunningdale, Gauteng;Sunset Acres;Sydenham, Gauteng;Victoria, Gauteng;Wierda Valley;Woodlands, Gauteng;Woodmead;Wynberg, Gauteng;"
+    johannesburg_region_f = "Aeroton;Alan Manor;Aspen Hills, Gauteng;Belgravia, Gauteng;Bellevue East;Bellevue, Gauteng;Benrose;Berea, Gauteng;Bertrams, Gauteng;Braamfontein;Braamfontein Werf;Chrisville;City and Suburban Industrial, Gauteng;City and Suburban, Gauteng;City Deep, Gauteng;City West-Denver;Crown Gardens;Crown North;Doornfontein;Droste Park;Eagles Nest, Gauteng;Eastcliff, Gauteng;Elandspark;Elcedes;Electron, Gauteng;Elladoone;Evans Park;Fairview, Gauteng;Ferreirasdorp;Fordsburg;Forest Hill, Gauteng;Framton;The Gables, Gauteng;Gillview;Glenanda;Glenesk;Glenvista;Haddon, Gauteng;Heriotdale;Highlands, Gauteng;Hillbrow;Houghton Estate;Jan Hofmeyer;Jeppestown;Jeppestown South;Johannesburg South;Joubert Park;Judith's Paarl;Kenilworth, Gauteng;Kensington, Gauteng;Kibler Park;Klipriviersberg;Klipriviersberg Estate;La Rochelle, Gauteng;Lake View Estate;Liefde en Vrede;Lindberg Park;Linmeyer;Lorentzville;Malvern, Gauteng;Marshalls, Gauteng;Marshalltown, Gauteng;Mayfair, Gauteng;Mayfield Park, Gauteng;Meredale;Milpark;Moffat View;Mondeor;Mulbarton, Gauteng;Nasrec;New Centre, Gauteng;New Doornfontein;Newtown, Johannesburg;North Doornfontein;Oakdene, Gauteng;Observatory, Gauteng;Ophirton;Ormonde, Gauteng;Pageview, Gauteng;Park Central, Gauteng;Parktown;Patlynn;Prolecon;Randview;Regency, Gauteng;Regents Park Estate;Regents Park, Gauteng;Reuven, Gauteng;Rewlatch;Reynolds View;Ridgeway, Gauteng;Riepen Park;Risana;Rispark;Robertsham;Roseacre, Gauteng;Rosettenville;Salisbury Claims;Selby, Gauteng;South Hills, Gauteng;Southdale, Gauteng;Southfork, Gauteng;Southgate, Gauteng;Spes Bona;Springfield, Gauteng;Stafford, Gauteng;Steeledale;Suideroord;The Hill, Gauteng;Theta, Gauteng;Towerby;Townsview;Troyeville;Tulisa Park;Turf Club, Gauteng;Turffontein;Village Main, Gauteng;Yeoville;"
+    johannesburg_region_g = "Ennerdale, Gauteng;Lawley, Gauteng;Lenasia;Orange Farm;"
+
+    suburbs_of_johannesburg = johannesburg_region_a+johannesburg_region_b+johannesburg_region_c+johannesburg_region_d+johannesburg_region_e+johannesburg_region_f+johannesburg_region_g
+    return suburbs_of_johannesburg.split(";")
+  end
+
+  def self.get_suburbs_of_kempton_park_gauteng
+    return "Allen Grove, Gauteng;Birchleigh;Bonaero Park;Cresslawn;Edleen;Esther Park;Norkem Park;Van Riebeeck Park;".split(";")
+  end
+
+  def self.get_suburbs_of_pretoria
+    return "Akasia;Arcadia, Pretoria;Atteridgeville;Booysens, Pretoria;Brooklyn, Pretoria;Chantelle, Pretoria;Eersterust;Elardus Park;Garsfontein;Groenkloof;Hatfield, Pretoria;Kameeldrift;Lynnwood Manor;Lynnwood, Pretoria;Marabastad, Pretoria;Menlo Park, Pretoria;Monument Park, Pretoria;Moreleta Park;Pretoria North;Prinshof;Waterkloof;Waterkloof Ridge;Wingate Park;".split(";")
+  end
+
+  def self.get_suburbs_of_vereeniging
+    return "Three Rivers East;Three Rivers Proper".split(";")
+  end
+
+  def self.get_suburbs_of_durban
+    return "Berea, Durban;Bluff, KwaZulu-Natal;Botha's Hill;Cato Manor;Cowies Hill;Durban North;Forest Hills, Kloof;Gillitts;Glenwood, KwaZulu-Natal;Kennedy Road, Durban;Kloof;KwaMashu;La Lucia;Magabeni;Mariannhill;Morningside, Durban;Ottawa, KwaZulu-Natal;Overport;Queensburgh;Shallcross, Durban;Stamford Hill, Durban;Sydenham, Durban;Umlazi;Upper Highway Area;Wentworth, Durban;Westville, KwaZulu-Natal;Winston Park, South Africa;".split(";")
+  end
+
+  def self.get_suburbs_of_centurion_gauteng
+    return "Cornwall Hill;Erasmia;Heuweloord;Irene, Gauteng;Kloofsig;Laudium;Lyttelton, Gauteng;Olievenhoutbosch;Pierre van Ryneveld Park;".split(";")
+  end
+
+  def self.get_suburbs_of_bloemfontein
+    return "Fauna, Bloemfontein;Heuwelsig;Willows, Bloemfontein;".split(";")
+  end
+
+  def self.get_suburbs_of_cape_town
+    return "Rondebosch;Wynberg‎;Newlands;".split(";")
+  end
+
+  def self.get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+    # url = URI.encode("http://maps.googleapis.com/maps/api/geocode/json?address=#{suburb}&components=administrative_area:#{city}|country:#{country.iso}")
+    url = URI.encode("http://maps.googleapis.com/maps/api/geocode/json?address=#{suburb}&components=administrative_area:|country:#{country.iso}")
+    puts url
+    uri = URI.parse(url)
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    # http.use_ssl = true
+    req = Net::HTTP::Get.new(uri.request_uri)
+    res = http.request req
+    # puts "req:\n#{req}"
+    #raw_response = http.request req
+    #parsed_response = JSON(raw_response)
+
+
+    #req = Net::HTTP::Get.new(url.to_s)
+    #res = Net::HTTP.start(url.host, url.port) { |http|
+    #  http.request(req)
+    #}
+
+    lat = lng = 0
+    postal_code = ""
+    if res.code == "200"
+      response = res.try(:body) || ""
+      # puts "response body:\n#{response}"
+
+      isCreate = false
+      begin
+        obj = ActiveSupport::JSON.decode(response)
+        error_message = obj["error_message"] if obj.present? and obj["error_message"]
+        results = obj["results"] if obj.present? and obj["results"].present?
+        if error_message.present?
+          puts "error: #{error_message}"
+        end
+        if results.blank? or results.count == 0
+          puts "empty results: #{results}"
+          return
+        end
+        lat = obj["results"].first["geometry"]["location"]["lat"] if obj.present? and obj["results"].present? and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lat"]
+        lng = obj["results"].first["geometry"]["location"]["lng"] if obj.present? and obj["results"].present? and obj["results"].first["geometry"] and obj["results"].first["geometry"]["location"] and obj["results"].first["geometry"]["location"]["lng"]
+        addresses = obj["results"].first["address_components"] if obj.present? and obj["results"].present? and obj["results"].first["address_components"]
+        addresses2 = obj["results"].first["address_components"] if obj.present? and obj["results"].present?
+        puts "\nSuburb: #{postal_code} #{suburb} #{city} #{state.try(:name)} #{lat} #{lng}"
+				puts "+addresses: #{addresses}"
+        if addresses.present? && addresses.any?
+          addresses.each do |address|
+            addreess_name = address["short_name"] if address["short_name"]
+            addreess_type = address["types"].first if address["types"].present?
+            puts "+address: type:#{addreess_type} name: #{addreess_name} city: #{city} "
+            if addreess_type = "postal_code"
+              postal_code = addreess_name
+              #elsif address_type.start_with?("locality") && addreess_name.downcase == city.downcase
+            elsif address_type.start_with?("administrative_area_level") && addreess_name.downcase == state.try(:name).try(:downcase)
+              isCreate = true
+            end
+          end
+        else
+          puts "+error: addresses empty"
+        end
+        if isCreate
+          puts "++created #{postal_code} #{suburb} #{state}  #{lat} #{lng}"
+          # Suburb.find_or_create_by(postal_code, suburb, state_id, lat, lng)
+        end
+
+      rescue ActiveSupport::JSON.parse_error
+        Rails.logger.warn("Attempted to decode invalid JSON: #{response}")
+      end
+
+    else
+      puts "error response #{response.code}"
+      # return
+    end
+
+    return lat, lng, postal_code
+  end
+
+  def self.seed_au
+    # start states
+    unless Spree::State.find_by_name 'Victoria'
+      country = Spree::Country.find_by_name('Australia')
+      puts "[db:seed] Seeding states of the Australia"
+      [
+          ['ACT', 'ACT'],
+          ['New South Wales', 'NSW'],
+          ['Northern Territory', 'NT'],
+          ['Queensland', 'QLD'],
+          ['South Australia', 'SA'],
+          ['Tasmania', 'Tas'],
+          ['Victoria', 'Vic'],
+          ['Western Australia', 'WA']
+      ].each do |state|
+        Spree::State.create!({"name" => state[0], "abbr" => state[1], :country => country}, :without_protection => true)
+      end
+    end
+    # end states
+
+    # start suburbs
+    state_id_act = Spree::State.find_by_abbr("ACT").id
+    state_id_nsw = Spree::State.find_by_abbr("NSW").id
+    state_id_nt = Spree::State.find_by_abbr("NT").id
+    state_id_qld = Spree::State.find_by_abbr("QLD").id
+    state_id_sa = Spree::State.find_by_abbr("SA").id
+    state_id_tas = Spree::State.find_by_abbr("Tas").id
+    state_id_vic = Spree::State.find_by_abbr("Vic").id
+    state_id_wa = Spree::State.find_by_abbr("WA").id
+
+    connection = ActiveRecord::Base.connection()
+
+    puts "-- Seeding Australian suburbs"
+    connection.execute("
 			INSERT INTO suburbs (postcode,name,state_id,latitude,longitude) VALUES
 			($$200$$,$$AUSTRALIAN NATIONAL UNIVERSITY$$,#{state_id_act},-35.277272,149.117136), 
 			($$221$$,$$BARTON$$,#{state_id_act},-35.201372,149.095065),
@@ -12541,6 +12788,7 @@ module SuburbSeeder
 			($$5093$$,$$PARA VISTA$$,#{state_id_sa},-34.82944,138.665465),
 			($$5093$$,$$VALLEY VIEW$$,#{state_id_sa},-34.82944,138.665465),
 			($$5094$$,$$CAVAN$$,#{state_id_sa},-34.82798,138.59863),
+			($$5093$$,$$VALLEY VIEW$$,#{state_id_sa},-34.82944,138.665465),
 			($$5094$$,$$DRY CREEK$$,#{state_id_sa},-34.82798,138.59863),
 			($$5094$$,$$GEPPS CROSS$$,#{state_id_sa},-34.82798,138.59863),
 			($$5095$$,$$MAWSON LAKES$$,#{state_id_sa},-34.817573,138.618743),
@@ -16893,5 +17141,6 @@ module SuburbSeeder
 			($$6181$$,$$Stake Hill$$,#{state_id_wa},-32.4898,115.811),
 			($$6060$$,$$Yokine South$$,#{state_id_wa},-31.9097,115.849);
 		")
-	end
+  end
+
 end
