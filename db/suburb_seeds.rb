@@ -62,23 +62,36 @@ module SuburbSeeder
         state_name = item[:state]
         state_abbr = item[:state_abbr]
 				# state = Spree::State.where(name: state_name, abbr: state_abbr, country_id: country.id).first_or_create(without_protection: true)
+        if Spree::State.exists?(name:state_name)
+				  # state = Spree::State.where(name: state_name).first_or_create!(name: state_name, abbr: state_abbr, country_id: country.id) #ActiveRecord::RecordInvalid: Validation failed: Country can't be blank
+          state = Spree::State.find_by_name(state_name)
+        else
+          state = Spree::State.new
+          state.country = country
+          state.name = state_name
+          state.abbr = state_abbr
+          state.save
+        end
 
-				state = Spree::State.where(name: state_name).first_or_create(abbr: state_abbr, country_id: country.id)
-				puts "state: #{state.try(:name)} #{state.try(:abbr)} #{state.try(:country_id)}"
-        city = item[:city]
-        suburbs = item[:suburbs]
-        suburbs.each do |suburb|
-          # save_json_to_file(country, state, city, suburb)
-          x,y,postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
-          puts "+++ got lat:#{x} ln:#{y} postal code:#{postal_code}"
-          # item = Suburb.where(name: suburb).first_or_create.update_attributes(postcode:postal_code.to_s, state_id: state.id, latitude: x, longitude: y)
-          item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
-          item.postcode = postal_code
-          item.state = state
-          item.latitude = x
-          item.longitude = y
-          item.save
-          puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
+        if state.present?
+          puts "#{state.try(:id)} state: #{state.try(:name)} #{state.try(:abbr)} country_id: #{state.try(:country_id)}"
+          city = item[:city]
+          suburbs = item[:suburbs]
+          suburbs.each do |suburb|
+            # save_json_to_file(country, state, city, suburb)
+            x,y,postal_code = get_coordinates_by_city_and_suburb_name(country, state, city, suburb)
+            puts "+++ got lat:#{x} ln:#{y} postal code:#{postal_code}"
+            # item = Suburb.where(name: suburb).first_or_create.update_attributes(postcode:postal_code.to_s, state_id: state.id, latitude: x, longitude: y)
+            item = Suburb.where(name: suburb).first_or_create(postcode:postal_code, state_id: state.id, latitude: x, longitude: y)
+            item.postcode = postal_code
+            item.state = state
+            item.latitude = x
+            item.longitude = y
+            item.save
+            puts "+++ suburb created: #{item.try(:postcode)} #{item.try(:name)} (#{item.try(:state_id)}:#{state.try(:name)}) #{item.try(:latitude)} #{item.try(:longitude)}"
+            end
+        else
+          puts "error: state not found or not created #{state_name} #{state_abbr}"
         end
       end
     else
