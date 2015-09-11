@@ -131,8 +131,8 @@ feature %q{
     fill_in 'enterprise_twitter', :with => '@eaterprises'
 
     click_link "Business Details"
-    fill_in 'enterprise_abn', :with => '09812309823'
-    fill_in 'enterprise_acn', :with => ''
+    # fill_in 'enterprise_abn', :with => '09812309823'
+    # fill_in 'enterprise_acn', :with => ''
     choose 'Yes' # enterprise_charges_sales_tax
 
     click_link "Address"
