@@ -4,7 +4,7 @@ module SuburbSeeder
   def self.seed_suburbs
     # test_seed()
     # return
-    seed_au() unless Suburb.find_by_name("Dayton") # australia
+    # seed_au() unless Suburb.find_by_name("Dayton") # australia
     seed_za() # south africa
   end
 
