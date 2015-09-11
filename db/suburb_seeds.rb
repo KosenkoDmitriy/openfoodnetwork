@@ -40,6 +40,7 @@ module SuburbSeeder
     # }
     # str = get_suburbs()
 
+    country = Spree::Country.where(iso: 'ZA').first_or_create(iso_name: "SOUTH AFRICA", iso: "ZA", iso3: "ZAF", name: "South Africa", numcode: 710, states_required: true)
     if Spree::Country.exists?(iso: 'ZA')
       country = Spree::Country.find_by_iso('ZA')
       puts "[db:seed] Seeding state/province of the South Africa"
