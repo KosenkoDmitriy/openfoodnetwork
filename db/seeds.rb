@@ -36,7 +36,6 @@ end
 destroy_countries() #TODO: after add states to each country it should be removed
 
 #TODO: import images
-#TODO: create enteriprises (at least two) which have a SOUTH AFRICA adresses
 
 # -- States and Suburbs
 require_relative './suburb_seeds'
@@ -44,4 +43,4 @@ SuburbSeeder.seed_suburbs #unless Suburb.find_by_name("Dayton")
 
 email="spree@example.com"
 password="spree123"
-u=Spree::User.where(email:email).first_or_create!(email:email,password:password)
+u = Spree::User.where(email: email).first_or_create!(email: email, password: password)

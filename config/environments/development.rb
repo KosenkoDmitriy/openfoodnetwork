@@ -33,11 +33,11 @@ Openfoodnetwork::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = false
 
-  # uncomment to increase debug perfomance (if assets debugging are not required)
-  #config.assets.debug = false
-  #config.assets.compile = false
-  #config.assets.digest = true
-  # end increase debug perfomance (if assets debugging are not required)
+  # ## uncomment to increase debug perfomance (if assets debugging are not required)
+  # config.assets.debug = false
+  # config.assets.compile = false
+  # config.assets.digest = true
+  # ## end increase debug perfomance (if assets debugging are not required)
 
   # Show emails using Letter Opener
   config.action_mailer.delivery_method = :letter_opener
