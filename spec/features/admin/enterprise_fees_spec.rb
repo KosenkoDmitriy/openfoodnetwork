@@ -7,7 +7,7 @@ feature %q{
   include AuthenticationWorkflow
   include WebHelper
 
-  let!(:tax_category_gst) { create(:tax_category, name: 'GST') }
+  let!(:tax_category_gst) { create(:tax_category, name: 'VAT') }
 
   scenario "listing enterprise fees" do
     fee = create(:enterprise_fee, name: '$0.50 / kg', fee_type: 'packing', tax_category: tax_category_gst)
