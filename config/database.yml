@@ -22,6 +22,7 @@ production:
   encoding: unicode
   database: ofn_prod
   pool: 5
+  host: localhost
   username: ofn
   password: f00d
 
