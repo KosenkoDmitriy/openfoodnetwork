@@ -7,9 +7,9 @@ class ContentConfiguration < Spree::Preferences::FileConfiguration
   preference :logo, :file
   preference :logo_mobile, :file
   preference :logo_mobile_svg, :file
-  has_attached_file :logo, :default_url => "/assets/home/logo.png" #640x130
-  has_attached_file :logo_mobile, :default_url => "/assets/home/logo.png" #75x26
-  has_attached_file :logo_mobile_svg, :default_url => "/assets/home/logo.png"
+  has_attached_file :logo, :default_url => "/assets/home/logo.jpeg" #640x130
+  has_attached_file :logo_mobile, :default_url => "/assets/home/logo_mobile.jpeg" #75x26
+  has_attached_file :logo_mobile_svg, :default_url => "/assets/home/logo.jpeg"
 
   # Home page
   preference :home_hero, :file
@@ -33,9 +33,9 @@ class ContentConfiguration < Spree::Preferences::FileConfiguration
 
   # Footer
   preference :footer_logo, :file
-  has_attached_file :footer_logo, :default_url => "/assets/logos/original/missing.png" #220x76
+  has_attached_file :footer_logo, :default_url => "/assets/home/logo_footer.jpeg" #220x76
   # has_attached_file :avatar, styles: { medium: "300x300>", thumb: "100x100>" }, default_url: "/images/:style/missing.png"
-  has_attached_file :avatar, :default_url => "/assets/home/logo.png"
+  has_attached_file :avatar, :default_url => "/assets/home/logo.png" #where logo.png is original .jpeg file
 
   preference :footer_facebook_url, :string, default: "https://www.facebook.com/OpenFoodNet"
   preference :footer_twitter_url, :string, default: "https://twitter.com/OpenFoodNet"
