@@ -4,6 +4,7 @@
 # Minimum 30 but usually 128 characters. To obtain run 'rake secret', or faster, 'openssl rand -hex 128'
 SECRET_TOKEN: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+#rake time:zones:all OFFSET=+2
 TIMEZONE: Pretoria
 # Default country for dropdowns etc. See for codes: http://en.wikipedia.org/wiki/ISO_3166-1
 DEFAULT_COUNTRY_CODE: ZA
