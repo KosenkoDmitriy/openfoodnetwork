@@ -34,10 +34,10 @@ module OpenFoodNetwork
 
     def rows_for_order(order, invoice_number, opts)
       [
-        summary_row(order, 'Total untaxable produce (no tax)',       total_untaxable_products(order), invoice_number, 'GST Free Income',        opts),
-        summary_row(order, 'Total taxable produce (tax inclusive)',  total_taxable_products(order),   invoice_number, 'GST on Income',          opts),
-        summary_row(order, 'Total untaxable fees (no tax)',          total_untaxable_fees(order),     invoice_number, 'GST Free Income',        opts),
-        summary_row(order, 'Total taxable fees (tax inclusive)',     total_taxable_fees(order),       invoice_number, 'GST on Income',          opts),
+        summary_row(order, 'Total untaxable produce (no tax)',       total_untaxable_products(order), invoice_number, 'VAT Free Income',        opts),
+        summary_row(order, 'Total taxable produce (tax inclusive)',  total_taxable_products(order),   invoice_number, 'VAT on Income',          opts),
+        summary_row(order, 'Total untaxable fees (no tax)',          total_untaxable_fees(order),     invoice_number, 'VAT Free Income',        opts),
+        summary_row(order, 'Total taxable fees (tax inclusive)',     total_taxable_fees(order),       invoice_number, 'VAT on Income',          opts),
         summary_row(order, 'Delivery Shipping Cost (tax inclusive)', total_shipping(order),           invoice_number, tax_on_shipping_s(order), opts)
       ].compact
     end
@@ -98,7 +98,7 @@ module OpenFoodNetwork
 
     def tax_on_shipping_s(order)
       tax_on_shipping = order.adjustments.shipping.sum(&:included_tax) > 0
-      tax_on_shipping ? 'GST on Income' : 'GST Free Income'
+      tax_on_shipping ? 'VAT on Income' : 'VAT Free Income'
     end
   end
 end

@@ -21,14 +21,16 @@
         .row
           .small-12.columns
             .field
-              %label{ for: 'enterprise_description' } Short Description:
+              %label{ for: 'enterprise_description' }=t("signup.stext")
               %input.chunky{ id: 'enterprise_description', placeholder: "A short sentence describing your enterprise", ng: { model: 'enterprise.description' } }
         .row
           .small-12.columns
             .field
-              %label{ for: 'enterprise_long_desc' } Long Description:
+              %label{ for: 'enterprise_long_desc' }=t("signup.text")
               %textarea.chunky{ id: 'enterprise_long_desc',  rows: 6, placeholder: "This is your opportunity to tell the story of your enterprise - what makes you different and wonderful? We'd suggest keeping your description to under 600 characters or 150 words.", ng: { model: 'enterprise.long_description' } }
-              %small {{ enterprise.long_description.length }} characters / up to 600 recommended
+              %small
+                {{ enterprise.long_description.length }}
+                = t("signup.text_size")
       .small-12.large-4.columns
         -#.row
           .small-12.columns
@@ -43,15 +45,14 @@
         .row
           .small-12.columns
             .field
-              %label{ for: 'enterprise_charges_sales_tax' }= t(:charges_sales_tax)
+              %label{ for: 'enterprise_charges_sales_tax' }=t(:charges_sales_tax)
               %input{ id: 'enterprise_charges_sales_tax_true', type: 'radio', name: 'charges_sales_tax', value: 'true', required: true, ng: { model: 'enterprise.charges_sales_tax' } }
-              %label{ for: 'enterprise_charges_sales_tax_true' } Yes
+              %label{ for: 'enterprise_charges_sales_tax_true' }=t("signup.yes")
               %input{ id: 'enterprise_charges_sales_tax_false', type: 'radio', name: 'charges_sales_tax', value: 'false', required: true, ng: { model: 'enterprise.charges_sales_tax' } }
-              %label{ for: 'enterprise_charges_sales_tax_false' } No
-              %span.error.small-12.columns{ ng: { show: "about.charges_sales_tax.$error.required && submitted" } }
-                You need to make a selection.
+              %label{ for: 'enterprise_charges_sales_tax_false' }=t("signup.no")
+              %span.error.small-12.columns{ ng: { show: "about.charges_sales_tax.$error.required && submitted" } }=t("signup.make_selection")
 
     .row.buttons.pad-top
       .small-12.columns
-        %input.button.primary.right{ type: "submit", value: "Continue" }
+        %input.button.primary.right{ type: "submit", value: t("signup.continue") }
         

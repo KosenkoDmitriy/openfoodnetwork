@@ -11,7 +11,7 @@ module OpenFoodNetwork
         "Unit",
         "Unit Price",
         "Total",
-        "GST incl.",
+        "VAT incl.",
         "Grower and growing method",
         "Taxon"
       ]

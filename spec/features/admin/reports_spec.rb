@@ -323,7 +323,7 @@ feature %q{
       click_link 'Reports'
       click_link 'LettuceShare'
 
-      page.should have_table_row ['PRODUCT', 'Description', 'Qty', 'Pack Size', 'Unit', 'Unit Price', 'Total', 'GST incl.', 'Grower and growing method', 'Taxon']
+      page.should have_table_row ['PRODUCT', 'Description', 'Qty', 'Pack Size', 'Unit', 'Unit Price', 'Total', 'VAT incl.', 'Grower and growing method', 'Taxon']
       page.should have_table_row ['Product 2', '100g', '', '100', 'g', '99.0', '99.0', '0', 'Supplier Name (Organic - NASAA 12345)', 'Taxon Name']
     end
   end
@@ -418,11 +418,11 @@ feature %q{
     it "shows Xero invoices report" do
       xero_invoice_table.should match_table [
         xero_invoice_header,
-        xero_invoice_row('Total untaxable produce (no tax)',       12.54, 'GST Free Income'),
-        xero_invoice_row('Total taxable produce (tax inclusive)',  1500.45, 'GST on Income'),
-        xero_invoice_row('Total untaxable fees (no tax)',          10.0, 'GST Free Income'),
-        xero_invoice_row('Total taxable fees (tax inclusive)',     20.0, 'GST on Income'),
-        xero_invoice_row('Delivery Shipping Cost (tax inclusive)', 100.55, 'GST on Income')
+        xero_invoice_row('Total untaxable produce (no tax)',       12.54, 'VAT Free Income'),
+        xero_invoice_row('Total taxable produce (tax inclusive)',  1500.45, 'VAT on Income'),
+        xero_invoice_row('Total untaxable fees (no tax)',          10.0, 'VAT Free Income'),
+        xero_invoice_row('Total taxable fees (tax inclusive)',     20.0, 'VAT on Income'),
+        xero_invoice_row('Delivery Shipping Cost (tax inclusive)', 100.55, 'VAT on Income')
       ]
     end
 
@@ -437,11 +437,11 @@ feature %q{
 
       xero_invoice_table.should match_table [
         xero_invoice_header,
-        xero_invoice_row('Total untaxable produce (no tax)',       12.54, 'GST Free Income', opts),
-        xero_invoice_row('Total taxable produce (tax inclusive)',  1500.45, 'GST on Income',   opts),
-        xero_invoice_row('Total untaxable fees (no tax)',          10.0, 'GST Free Income', opts),
-        xero_invoice_row('Total taxable fees (tax inclusive)',     20.0, 'GST on Income',   opts),
-        xero_invoice_row('Delivery Shipping Cost (tax inclusive)', 100.55, 'GST on Income', opts)
+        xero_invoice_row('Total untaxable produce (no tax)',       12.54, 'VAT Free Income', opts),
+        xero_invoice_row('Total taxable produce (tax inclusive)',  1500.45, 'VAT on Income',   opts),
+        xero_invoice_row('Total untaxable fees (no tax)',          10.0, 'VAT Free Income', opts),
+        xero_invoice_row('Total taxable fees (tax inclusive)',     20.0, 'VAT on Income',   opts),
+        xero_invoice_row('Delivery Shipping Cost (tax inclusive)', 100.55, 'VAT on Income', opts)
       ]
     end
 
