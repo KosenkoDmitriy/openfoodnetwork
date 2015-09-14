@@ -33,6 +33,7 @@ module Openfoodnetwork
                                                       Spree::Calculator::FlexiRate,
                                                       Spree::Calculator::PerItem,
                                                       Spree::Calculator::PriceSack,
+                                                      OpenFoodNetwork::Calculator::FlatPercentOrRatePerMonth,
                                                       OpenFoodNetwork::Calculator::Weight]
     end
 
