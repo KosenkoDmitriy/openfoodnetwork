@@ -26,18 +26,18 @@ Openfoodnetwork::Application.configure do
   # Do not compress assets
   config.assets.compress = false
 
-  # Expands the lines which load the assets
-  config.assets.debug = true
-  # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true
-  # Generate digests for assets URLs
-  config.assets.digest = false
+  # # Expands the lines which load the assets
+  # config.assets.debug = true
+  # # Don't fallback to assets pipeline if a precompiled asset is missed
+  # config.assets.compile = true
+  # # Generate digests for assets URLs
+  # config.assets.digest = false
 
-  # ## uncomment to increase debug perfomance (if assets debugging are not required)
-  # config.assets.debug = false
-  # config.assets.compile = false
-  # config.assets.digest = true
-  # ## end increase debug perfomance (if assets debugging are not required)
+  ## uncomment to increase debug perfomance (if assets debugging are not required)
+  config.assets.debug = false
+  config.assets.compile = false
+  config.assets.digest = true
+  ## end increase debug perfomance (if assets debugging are not required)
 
   # Show emails using Letter Opener
   config.action_mailer.delivery_method = :letter_opener

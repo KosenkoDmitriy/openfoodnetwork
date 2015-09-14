@@ -41,6 +41,11 @@ destroy_countries() #TODO: after add states to each country it should be removed
 require_relative './suburb_seeds'
 SuburbSeeder.seed_suburbs #unless Suburb.find_by_name("Dayton")
 
+#Enterprise Fees
+#+create enterprise
+#+create tax category
+#+create tax rate
+
 email="spree@example.com"
 password="spree123"
 u = Spree::User.where(email: email).first_or_create!(email: email, password: password)
