@@ -9,8 +9,6 @@ module OpenFoodNetwork
     attr_accessible :preferred_flat_percent, :preferred_amount, :preferred_currency
 
     def self.description
-      # I18n.t(:flat_percent)
-      # I18n.t(:flat_rate_per_order)
       I18n.t(:flat_percent_or_rate_per_month)
     end
 
@@ -41,5 +39,4 @@ module OpenFoodNetwork
   end
 end
 
-require_dependency 'spree/calculator'
 
