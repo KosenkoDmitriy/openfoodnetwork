@@ -28,7 +28,7 @@
             .bottom
               \%2 OF SALES
               %br
-              CAPPED AT $50 PER MONTH
+              CAPPED AT #{I18n.t(:fee_max_price)} PER MONTH
           %p.description
             Sell your products directly to customers through your very own Open Food Network shopfront.
             %br
@@ -36,7 +36,7 @@
             A Producer Shop is for your produce only, if you want to sell produce grown/produced off site, select 'Producer Hub'.
             %br
             %br
-            You will be billed for 2% of your actual transactions, capped at $50 a month (so if you don’t sell anything you don’t pay anything, but you never pay more than $50 a month).
+            You will be billed for #{I18n.t(:fee_percent)} of your actual transactions, capped at #{I18n.t(:fee_max_price)} a month (so if you don’t sell anything you don’t pay anything, but you never pay more than #{I18n.t(:fee_max_price)} a month).
 
         .full_hub.option.one-third.column.omega
           %a.full-width.button.selector{ ng: { click: "sells='any'", class: "{selected: sells=='any'}" } }
@@ -44,21 +44,21 @@
               %h3 Producer Hub
               %p Sell produce from self and others
             .bottom
-              \%2 OF SALES
+              \#{I18n.t(:fee_percent2)} OF SALES
               %br
-              CAPPED AT $50 PER MONTH
+              CAPPED AT #{I18n.t(:fee_max_price)} PER MONTH
           %p.description
             Your enterprise is the backbone of your local food system. You can sell your own produce as well as produce aggregated from other enterprises through your shopfront on the Open Food Network.
             %br
             %br
-            You will be billed for 2% of your actual transactions, capped at $50 a month (so if you don’t sell anything you don’t pay anything, but you never pay more than $50 a month).
+            You will be billed for #{I18n.t(:fee_percent)} of your actual transactions, capped at #{I18n.t(:fee_max_price)} a month (so if you don’t sell anything you don’t pay anything, but you never pay more than #{I18n.t(:fee_max_price)} a month).
 
 
           -# %p.description
           -#   Test out having your own shopfront with full access to all Shopfront features for 30 days.
           -#   %br
           -#   %br
-          -#   At the end of your trial, there is a one-off $200 fee to fully activate your account. Then you will be billed for 2% of your actual transactions, capped at $50 a month (so if you don’t sell anything you don’t pay anything, but you never pay more than $50 a month).
+          -#   At the end of your trial, there is a one-off $200 fee to fully activate your account. Then you will be billed for #{I18n.t(:fee_percent)} of your actual transactions, capped at #{I18n.t(:fee_max_price)} a month (so if you don’t sell anything you don’t pay anything, but you never pay more than #{I18n.t(:fee_max_price)} a month).
 
       - else
         .shop_profile.option.one-third.column.alpha
@@ -79,14 +79,14 @@
               %h3 Hub Shop
               %p Sell produce from others
             .bottom
-              \%2 OF SALES
+              \#{I18n.t(:fee_percent2)} OF SALES
               %br
-              CAPPED AT $50 PER MONTH
+              CAPPED AT #{I18n.t(:fee_max_price)} PER MONTH
           %p.description
             Your enterprise is the backbone of your local food system. You aggregate produce from other enterprises and can sell it through your shop on the Open Food Network.
             %br
             %br
-            You will be billed for 2% of your actual transactions, capped at $50 a month (so if you don’t sell anything you don’t pay anything, but you never pay more than $50 a month).
+            You will be billed for #{I18n.t(:fee_percent)} of your actual transactions, capped at #{I18n.t(:fee_max_price)} a month (so if you don’t sell anything you don’t pay anything, but you never pay more than #{I18n.t(:fee_max_price)} a month).
 
 
   .row
