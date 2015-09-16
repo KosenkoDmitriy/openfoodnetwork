@@ -49,3 +49,4 @@ SuburbSeeder.seed_suburbs #unless Suburb.find_by_name("Dayton")
 email="spree@example.com"
 password="spree123"
 u = Spree::User.where(email: email).first_or_create!(email: email, password: password)
+

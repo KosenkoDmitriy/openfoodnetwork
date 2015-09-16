@@ -5,8 +5,46 @@ module SuburbSeeder
     # test_seed()
     # return
     # seed_au() unless Suburb.find_by_name("Dayton") # australia
-    seed_za() # south africa
+    seed_za() # south africa suburbs
+		seed_all_za_states() #for updating states: rails c > require "#{Rails.root}/db/suburb_seeds.rb" > SuburbSeeder.seed_all_za_states()
   end
+
+	def self.seed_all_za_states()
+		# https://en.wikipedia.org/wiki/List_of_South_African_provinces_by_area
+		if Spree::Country.exists?(iso: 'ZA')
+			country = Spree::Country.find_by_iso('ZA')
+			states = [
+					{name:"Northern Cape", abbr:"ZA-NC"},
+					{name:"Eastern Cape", abbr:"ZA-EC"},
+					{name:"Free State", abbr:"ZA-FS"},
+					{name:"Western Cape", abbr:"ZA-WC"},
+					{name:"Limpopo", abbr:"ZA-LP"},
+					{name:"North West", abbr:"ZA-NW"},
+					{name:"KwaZulu-Natal", abbr:"ZA-KZN"},
+					{name:"Mpumalanga", abbr:"ZA-MP"},
+					{name:"Gauteng", abbr:"ZA-GP"},
+			]
+			states.each do |item|
+				state_name = item[:name]
+				state_abbr = item[:abbr]
+				state = Spree::State.where(name: state_name).first_or_create(abbr: state_abbr, country_id: country.id)
+				if state.present?
+					state.abbr = state_abbr
+					state.country = country
+					state.name = state_name
+					if state.save
+						puts "save ok #{state.try(:name)} #{state.try(:abbr)} #{state.try(:country_id)}"
+					else
+						puts "error save #{state.try(:name)} #{state.try(:abbr)} #{state.try(:country_id)}"
+					end
+				else
+					puts "state not found by his name: #{state_name} | abbr: #{state_abbr}"
+				end
+			end
+		else
+			puts "error seedeing za states: \n country nof found by iso: ZA"
+		end
+	end
 
   def self.test_seed
     country = Spree::Country.find_by_iso('ZA')
