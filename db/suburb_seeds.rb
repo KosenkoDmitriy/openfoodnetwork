@@ -6,7 +6,7 @@ module SuburbSeeder
     # return
     # seed_au() unless Suburb.find_by_name("Dayton") # australia
     seed_za() # south africa suburbs
-		seed_all_za_states() #for updating states: rails c > require "#{Rails.root}/db/suburb_seeds.rb" > SuburbSeeder.seed_all_za_states()
+		seed_all_za_states() #for updating states: rails c > require "#{Rails.root}/db/suburb_seeds.rb" > SuburbSeeder.seed_all_za_states() > exit
   end
 
 	def self.seed_all_za_states()

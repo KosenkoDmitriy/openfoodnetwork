@@ -7,19 +7,19 @@
     %ul.center
       %li
         %a{href: main_app.shops_path}
-          %span.nav-primary Shops
+          %span.nav-primary #{I18n.t("nav.menu.shops")}
       %li
         %a{href: main_app.map_path}
-          %span.nav-primary Map
+          %span.nav-primary #{I18n.t("nav.menu.map")}
       %li
         %a{href: main_app.producers_path}
-          %span.nav-primary Producers
+          %span.nav-primary #{I18n.t("nav.menu.producers")}
       %li
         %a{href: main_app.groups_path}
-          %span.nav-primary Groups
+          %span.nav-primary #{I18n.t("nav.menu.groups")}
       %li
-        %a{href: ContentConfig.footer_about_url}
-          %span.nav-primary About
+        %a{href: main_app.about_path}
+          %span.nav-primary #{I18n.t("nav.menu.about")}
     %ul.right
       - if spree_current_user.nil?
         = render 'shared/signed_out'

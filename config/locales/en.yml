@@ -49,3 +49,10 @@ en:
   fee_max_price: "R500"
   fee_percent: "2%"
   fee_percent2: "%2"
+  nav:
+    menu:
+      about: "About"
+      shops: "Shop"
+      map: "Map"
+      producers: "Producers"
+      groups: "Groups"
