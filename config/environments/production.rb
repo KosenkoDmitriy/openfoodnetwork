@@ -63,4 +63,17 @@ Openfoodnetwork::Application.configure do
 
   # force ssl site-wide
   # config.middleware.insert_before ActionDispatch::Static, "Rack::SSL"
+
+  #config.action_mailer.delivery_method = :sendmail
+  #config.action_mailer.sendmail_settings = {
+  #    :location => '/usr/sbin/sendmail',
+  #    :arguments => '-i'
+  #}
+
+  #config.action_mailer.perform_deliveries = true
+  #config.action_mailer.raise_delivery_errors = true
+  #config.action_mailer.default_options = {from: 'ofn@kandu.co.za'}
+  #config.action_mailer.default_url_options = { host: 'mail01-dtp.thecloud.co.za' }
+  #config.action_mailer.default_url_options = { host: 'ofn@kandu.co.za' }
+
 end
