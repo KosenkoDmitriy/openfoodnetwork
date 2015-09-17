@@ -20,9 +20,12 @@
         -#   If there is a time-sensitive offer you can write it here, e.g.
         -#   Sign up before 30th June for an extra month free!
         %br
-        = ContentConfig.producer_signup_pricing_table_html.html_safe
+          -if ContentConfig.producer_signup_pricing_table_html.present?
+            = ContentConfig.producer_signup_pricing_table_html.html_safe
+          -else
+            = render partial:"producers/pricing"
 
-  #producer-case-studies
+  -##producer-case-studies
     .row
       .small-12.medium-10.medium-offset-1.columns
         %h2.text-center Stories from our producers.
@@ -41,6 +44,9 @@
     .row
       .small-12.medium-10.medium-offset-1.columns
         %h2.text-center Here's the detail.
-        = ContentConfig.producer_signup_detail_html.html_safe
+        -if ContentConfig.producer_signup_detail_html.present?
+          = ContentConfig.producer_signup_detail_html.html_safe
+        -else
+          = render partial:"producers/detail"
 
 = render partial: "shared/footer"
