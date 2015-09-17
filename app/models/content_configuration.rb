@@ -37,13 +37,13 @@ class ContentConfiguration < Spree::Preferences::FileConfiguration
   # has_attached_file :avatar, styles: { medium: "300x300>", thumb: "100x100>" }, default_url: "/images/:style/missing.png"
   has_attached_file :avatar, :default_url => "/assets/home/logo.png" #where logo.png is original .jpeg file
 
-  preference :footer_facebook_url, :string, default: "https://www.facebook.com/OpenFoodNet"
-  preference :footer_twitter_url, :string, default: "https://twitter.com/OpenFoodNet"
+  preference :footer_facebook_url, :string, default: "https://www.facebook.com/Open-Food-Network-SA-891306990883565/timeline/?ref=hl"
+  preference :footer_twitter_url, :string, default: "htps://twitter.com/ofn_sa"
   preference :footer_instagram_url, :string, default: ""
-  preference :footer_linkedin_url, :string, default: "http://www.linkedin.com/groups/Open-Food-Foundation-4743336"
+  preference :footer_linkedin_url, :string, default: ""
   preference :footer_googleplus_url, :string, default: ""
   preference :footer_pinterest_url, :string, default: ""
-  preference :footer_email, :string, default: "hello@openfoodnetwork.org"
+  preference :footer_email, :string, default: "ofn@kandu.co.za"
   preference :footer_links_md, :text, default: <<-EOS
 [Newsletter sign-up](/)
 
@@ -52,6 +52,6 @@ class ContentConfiguration < Spree::Preferences::FileConfiguration
 [Calendar](/)
 EOS
 
-  preference :footer_about_url, :string, default: "http://www.openfoodnetwork.org/ofn-local/open-food-network-australia/"
+  preference :footer_about_url, :string, default: "http://ofn.kandu.co.za/about"
   preference :footer_tos_url, :string, default: "/Terms-of-service.pdf"
 end
