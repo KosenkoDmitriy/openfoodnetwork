@@ -9,8 +9,7 @@
   Please click the link below to confirm your email and to continue setting up your profile.
   %br
   %strong
-    -confirmation_url = enterprise_confirmation_url(@resource, :confirmation_token => @resource.confirmation_token)
-    = link_to 'Confirm this email address »', confirmation_url
+    = link_to 'Confirm this email address »', enterprise_confirmation_url(@resource, :confirmation_token => @resource.confirmation_token)
 
 %p &nbsp;
 %p
