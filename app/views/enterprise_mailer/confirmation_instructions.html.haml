@@ -9,8 +9,7 @@
   Please click the link below to confirm your email and to continue setting up your profile.
   %br
   %strong
-    -confirmation_url = spree_user_confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) if @resource.type == 'Spree::User'
-    -confirmation_url = enterprise_confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) if @resource.type == 'Enterprise'
+    -confirmation_url = enterprise_confirmation_url(@resource, :confirmation_token => @resource.confirmation_token)
     = link_to 'Confirm this email address »', confirmation_url
 
 %p &nbsp;
