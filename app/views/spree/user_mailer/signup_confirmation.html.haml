@@ -29,8 +29,8 @@
   %em
     Send Feedback
   button on the site or email us at
-  %a{:href => "mailto:hello@openfoodnetwork.org", :target => "_blank"}
-    hello@openfoodnetwork.org
+  %a{:href => "mailto:#{ContentConfig.footer_email}", :target => "_blank"}
+    =ContentConfig.footer_email
 
 = render 'shared/mailers/signoff'
 

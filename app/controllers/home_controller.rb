@@ -13,4 +13,9 @@ class HomeController < BaseController
   def about
 
   end
+
+  def test
+    render partial:"shared/mailers/social_and_contact"
+    # ContentConfig.footer_email.reverse
+  end
 end
