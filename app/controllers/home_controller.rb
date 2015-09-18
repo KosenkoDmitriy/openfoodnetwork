@@ -15,7 +15,10 @@ class HomeController < BaseController
   end
 
   def test
-    render partial:"shared/mailers/social_and_contact"
-    # ContentConfig.footer_email.reverse
+    # render template:"groups/signup"
+    # render template:"shops/signup"
+    render template:"producers/signup"
+
+    # render partial:"shared/mailers/social_and_contact"
   end
 end

@@ -35,14 +35,18 @@
         -#   / If there is a time-sensitive offer you can write it here, e.g.
         -#   Time-sensitive offer goes here!
         %br
-        = ContentConfig.group_signup_pricing_table_html.html_safe
+        -if ContentConfig.group_signup_pricing_table_html.present?
+          = ContentConfig.group_signup_pricing_table_html.html_safe
+        -else
+          = render partial:"producers/pricing"
 
-  #shops-case-studies
-    .row
-      .small-12.medium-10.medium-offset-1.columns
-        %h2.text-center Case studies
-        %br
-        = ContentConfig.group_signup_case_studies_html.html_safe
+  - if ContentConfig.group_signup_case_studies_html.present?
+    #shops-case-studies
+      .row
+        .small-12.medium-10.medium-offset-1.columns
+          %h2.text-center Case studies
+          %br
+          = ContentConfig.group_signup_case_studies_html.html_safe
 
   .pane#cta
     .row
@@ -56,6 +60,9 @@
     .row
       .small-12.medium-10.medium-offset-1.columns
         %h2.text-center Here's the detail.
-        = ContentConfig.group_signup_detail_html.html_safe
+        -if ContentConfig.group_signup_detail_html.present?
+          = ContentConfig.group_signup_detail_html.html_safe
+        -else
+          = render partial:"producers/detail"
 
 = render partial: "shared/footer"
