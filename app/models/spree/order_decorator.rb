@@ -130,7 +130,11 @@ Spree::Order.class_eval do
     else
       current_item = Spree::LineItem.new(:quantity => quantity, max_quantity: max_quantity)
       current_item.variant = variant
-      current_item.unit_value = variant.unit_value
+      if variant.unit_value
+        current_item.final_weight_volume = variant.unit_value * quantity
+      else
+        current_item.final_weight_volume = 0
+      end
       if currency
         current_item.currency = currency unless currency.nil?
         current_item.price    = variant.price_in(currency).amount
@@ -233,8 +237,11 @@ Spree::Order.class_eval do
   end
 
   # Overrride of Spree method, that allows us to send separate confirmation emails to user and shop owners
+  # And separately, to skip sending confirmation email completely for user invoice orders
   def deliver_order_confirmation_email
-    Delayed::Job.enqueue ConfirmOrderJob.new(id)
+    unless distributor_id == Spree::Config.accounts_distributor_id
+      Delayed::Job.enqueue ConfirmOrderJob.new(id)
+    end
   end
 
 

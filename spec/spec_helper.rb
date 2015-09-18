@@ -13,6 +13,7 @@ require 'rspec/rails'
 require 'capybara'
 require 'database_cleaner'
 require 'rspec/retry'
+require 'paper_trail/frameworks/rspec'
 
 # Allow connections to phantomjs/selenium whilst raising errors
 # when connecting to external sites
@@ -80,6 +81,11 @@ RSpec.configure do |config|
   config.before(:each, js: true) { DatabaseCleaner.strategy = :deletion, {except: ['spree_countries', 'spree_states']} }
   config.before(:each)           { DatabaseCleaner.start }
   config.after(:each)            { DatabaseCleaner.clean }
+  config.after(:each, js:true) do
+    Capybara.reset_sessions!
+    RackRequestBlocker.wait_for_requests_complete
+    DatabaseCleaner.clean
+  end
 
   # Geocoding
   config.before(:each) { Spree::Address.any_instance.stub(:geocode).and_return([1,1]) }
