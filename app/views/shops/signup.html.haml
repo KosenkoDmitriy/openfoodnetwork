@@ -49,7 +49,7 @@
         -if ContentConfig.hub_signup_detail_html.present?
           = ContentConfig.hub_signup_detail_html.html_safe
         -else
-          = render partial:"producers/pricing"
+          = render partial:"producers/detail"
 
 
 = render partial: "shared/footer"
