@@ -1,2 +1,3 @@
 :javascript
+  //angular.module('Darkswarm').value("#{name.to_s}", "#{escape_javascript("#{render partial: "json/#{partial.to_s}"}")}")
   angular.module('Darkswarm').value("#{name.to_s}", #{render partial: "json/#{partial.to_s}"})

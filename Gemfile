@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
-ruby "2.0.0"
+#ruby "2.0.0" #only angular javascipt error in checkout
+ruby "1.9.3" #angular errors everywhere
 
 gem 'rails', '3.2.21'
 gem 'rails-i18n', '~> 3.0.0'
@@ -66,7 +67,7 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.1'
 
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  gem 'therubyracer'
+  gem 'therubyracer', '~> 0.12.1' # or 0.12.2
 
   gem 'uglifier', '>= 1.0.3'
 
@@ -105,16 +106,13 @@ end
 
 group :test do
   gem 'webmock'
-  #for uml diagrams
-  gem 'railroady'
-  gem "rails-erd"
   # See spec/spec_helper.rb for instructions
   #gem 'perftools.rb'
 end
 
 group :development do
-  gem 'pry-debugger'
-  gem 'debugger-linecache'
+  #gem 'pry-debugger'
+  #gem 'debugger-linecache'
   gem 'guard'
   gem 'guard-livereload'
   gem 'rack-livereload'
@@ -122,7 +120,8 @@ group :development do
   gem 'guard-zeus'
   gem 'guard-rspec'
   gem 'parallel_tests'
-  #for uml diagrams
-  gem 'railroady'
-  gem "rails-erd"
+
+  gem 'ruby-debug-base19x', '~> 0.11.31'
+  gem 'ruby-debug-ide', '~> 0.4.32'
+
 end
