@@ -33,7 +33,7 @@ rescue
   "Seeding Spree::Core and Spree::Engine exception"
 end
 
-destroy_countries() #TODO: after add states to each country it should be removed
+# destroy_countries() #TODO: after add states to each country it should be removed
 
 #TODO: import images
 
