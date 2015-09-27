@@ -32,7 +32,11 @@ class EnterpriseConfirmationsController < DeviseController
       set_flash_message(:error, :not_confirmed) if is_navigational_format?
     end
 
-    respond_with_navigational(resource){ redirect_to redirect_path(resource) }
+    if resource.present? && resource.try(:id).present?
+      respond_with_navigational(resource){ redirect_to redirect_path(resource) }
+    else
+      redirect_to spree.admin_path
+    end
   end
 
   private
