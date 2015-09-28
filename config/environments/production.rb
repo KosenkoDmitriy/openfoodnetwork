@@ -28,7 +28,7 @@ Openfoodnetwork::Application.configure do
   config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-#  config.force_ssl = true #TODO: uncomment and will fix error: RuntimeError: Cannot share client between multiple processes
+  config.force_ssl = true # must install ssl on server TODO: uncomment and will fix error: RuntimeError: Cannot share client between multiple processes
 
   # See everything in the log (default is :info)
   # config.log_level = :debug
