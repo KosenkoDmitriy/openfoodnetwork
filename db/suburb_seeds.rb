@@ -239,13 +239,13 @@ module SuburbSeeder
         # puts "+addresses: #{addresses}"
         if addresses.present? && addresses.any?
           addresses.each do |address|
-            addreess_name = address["short_name"] if address["short_name"]
-            addreess_type = address["types"].first if address["types"].present?
-            puts "+address: type:#{addreess_type} name: #{addreess_name} city: #{city} "
-            if addreess_type == "postal_code"
-              postal_code = addreess_name
+						address_name = address["short_name"] if address["short_name"]
+						address_type = address["types"].first if address["types"].present?
+            puts "+address: type:#{address_type} name: #{address_name} city: #{city} "
+						if address_type == "postal_code"
+              postal_code = address_name
               #elsif address_type.start_with?("locality") && addreess_name.downcase == city.downcase
-            elsif address_type.start_with?("administrative_area_level") && addreess_name.downcase == state.try(:name).try(:downcase)
+            elsif address_type.try(:start_with?, :administrative_area_level) && address_name.try(:downcase) == state.try(:name).try(:downcase)
               isCreate = true
             end
           end
