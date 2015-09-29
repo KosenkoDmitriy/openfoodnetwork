@@ -181,7 +181,7 @@ module SuburbSeeder
   end
 
   def self.get_suburbs_of_cape_town
-    return "Rondebosch;Wynberg‎;Newlands;".split(";")
+    return "Rondebosch;Wynberg;Newlands;".split(";")
   end
 
   def self.save_json_to_file(country, state, city, suburb)
@@ -242,7 +242,7 @@ module SuburbSeeder
             addreess_name = address["short_name"] if address["short_name"]
             addreess_type = address["types"].first if address["types"].present?
             puts "+address: type:#{addreess_type} name: #{addreess_name} city: #{city} "
-            if addreess_type = "postal_code"
+            if addreess_type == "postal_code"
               postal_code = addreess_name
               #elsif address_type.start_with?("locality") && addreess_name.downcase == city.downcase
             elsif address_type.start_with?("administrative_area_level") && addreess_name.downcase == state.try(:name).try(:downcase)
