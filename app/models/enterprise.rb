@@ -64,6 +64,7 @@ class Enterprise < ActiveRecord::Base
   validates :sells, presence: true, inclusion: {in: SELLS}
   validates :address, presence: true, associated: true
   validates :email, presence: true
+  validates :origin_code, length: { maximum: 10, }
   validates_presence_of :owner
   validates :permalink, uniqueness: true, presence: true
   validate :shopfront_taxons
