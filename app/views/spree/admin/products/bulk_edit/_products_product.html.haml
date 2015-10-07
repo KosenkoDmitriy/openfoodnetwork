@@ -15,8 +15,10 @@
     %input{ 'ng-model' => 'product.variant_unit_name', :name => 'variant_unit_name', 'ofn-track-product' => 'variant_unit_name', :placeholder => 'unit', 'ng-show' => "product.variant_unit_with_scale == 'items'", :type => 'text' }
   %td.display_as{ 'ng-show' => 'columns.unit.visible' }
     %input{ 'ofn-display-as' => 'product.master', name: 'display_as', 'ofn-track-master' => 'display_as', type: 'text', placeholder: '{{ placeholder_text }}', ng: { hide: 'hasVariants(product)', model: 'product.master.display_as' } }
-  %td.price{ 'ng-show' => 'columns.price.visible' }
+  -#%td.price{ 'ng-show' => 'columns.price.visible' }
     %input{ 'ng-model' => 'product.price', 'ofn-decimal' => :true, :name => 'price', 'ofn-track-product' => 'price', :type => 'text', 'ng-hide' => 'hasVariants(product)' }
+  %td.price{ 'ng-show' => 'columns.price' }
+    %input{ 'ng-model' => 'product.price', 'ofn-decimal' => :true, :name => 'price', 'ofn-track-product' => 'price', :type => 'text'}
   %td.on_hand{ 'ng-show' => 'columns.on_hand.visible' }
     %span{ 'ng-bind' => 'product.on_hand', :name => 'on_hand', 'ng-show' => '!hasOnDemandVariants(product) && (hasVariants(product) || product.on_demand)' }
     %input.field{ 'ng-model' => 'product.on_hand', :name => 'on_hand', 'ofn-track-product' => 'on_hand', 'ng-hide' => 'hasVariants(product) || product.on_demand', :type => 'number' }
