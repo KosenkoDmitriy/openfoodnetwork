@@ -7,27 +7,33 @@ module OpenFoodNetwork
         "Supplier",
         "Producer Suburb",
         "Product",
+        "SKU",
         "Product Properties",
         "Taxons",
         "Variant Value",
         "Price",
+        "Currency",
         "Group Buy Unit Quantity",
-        "Amount"
+        "Amount/Count on Hand",
+        "Unit Value"
       ]
     end
 
     def table
       variants.map do |variant|
         [
-          variant.product.supplier.name,
-          variant.product.supplier.address.city,
-          variant.product.name,
-          variant.product.properties.map(&:name).join(", "),
-          variant.product.taxons.map(&:name).join(", "),
-          variant.full_name,
-          variant.price,
-          variant.product.group_buy_unit_size,
-          ""
+          variant.try(:product).try(:supplier).try(:name),
+          variant.try(:product).try(:supplier).try(:address).try(:city),
+          variant.try(:product).try(:name),
+          variant.try(:product).try(:sku),
+          variant.try(:product).try(:properties).map(&:name).join(", "),
+          variant.try(:product).try(:taxons).map(&:name).join(", "),
+          variant.try(:full_name),
+          variant.try(:price),
+          variant.try(:cost_currency),
+          variant.try(:product).try(:group_buy_unit_size),
+          variant.try(:count_on_hand),
+          variant.try(:unit_value)
         ]
       end
     end
