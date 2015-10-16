@@ -11,6 +11,9 @@ module SuburbSeeder
 
 	def self.seed_all_za_states()
 		# https://en.wikipedia.org/wiki/List_of_South_African_provinces_by_area
+		#<Spree::Country id: 174, iso_name: "SOUTH AFRICA", iso: "ZA", iso3: "ZAF", name: "South Africa", numcode: 710, states_required: true>
+		country = Spree::Country.where(iso: "ZA").first_or_create(iso_name: "SOUTH AFRICA", iso: "ZA", iso3: "ZAF", name: "South Africa", numcode: 710, states_required: true)
+
 		if Spree::Country.exists?(iso: 'ZA')
 			country = Spree::Country.find_by_iso('ZA')
 			states = [
