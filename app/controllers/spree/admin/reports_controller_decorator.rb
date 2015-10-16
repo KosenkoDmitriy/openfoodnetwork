@@ -19,51 +19,61 @@ Spree::Admin::ReportsController.class_eval do
   include Spree::ReportsHelper
 
   REPORT_TYPES = {
-    orders_and_fulfillment: [
-      ['Order Cycle Supplier Totals',:order_cycle_supplier_totals],
-      ['Order Cycle Supplier Totals by Distributor',:order_cycle_supplier_totals_by_distributor],
-      ['Order Cycle Distributor Totals by Supplier',:order_cycle_distributor_totals_by_supplier],
-      ['Order Cycle Customer Totals',:order_cycle_customer_totals]
-    ],
-    products_and_inventory: [
-      ['All products', :all_products],
-      ['Inventory (on hand)', :inventory],
-      ['LettuceShare', :lettuce_share]
-    ],
-    customers: [
-      ["Mailing List", :mailing_list],
-      ["Addresses", :addresses]
-    ],
-    order_cycle_management: [
-      ["Payment Methods Report", :payment_methods],
-      ["Delivery Report", :delivery]
-    ],
-    packing: [
-      ["Pack By Customer", :pack_by_customer],
-      ["Pack By Supplier", :pack_by_supplier]
-    ]
+      orders_and_fulfillment: [
+          ['Order Cycle Supplier Totals', :order_cycle_supplier_totals],
+          ['Order Cycle Supplier Totals by Distributor', :order_cycle_supplier_totals_by_distributor],
+          ['Order Cycle Distributor Totals by Supplier', :order_cycle_distributor_totals_by_supplier],
+          ['Order Cycle Customer Totals', :order_cycle_customer_totals]
+      ],
+      products_and_inventory: [
+          ['All products', :all_products],
+          ['Inventory (on hand)', :inventory],
+          ['LettuceShare', :lettuce_share]
+      ],
+      customers: [
+          ["Mailing List", :mailing_list],
+          ["Addresses", :addresses]
+      ],
+      order_cycle_management: [
+          ["Payment Methods Report", :payment_methods],
+          ["Delivery Report", :delivery]
+      ],
+      packing: [
+          ["Pack By Customer", :pack_by_customer],
+          ["Pack By Supplier", :pack_by_supplier]
+      ],
+      original: [
+          ["Original Reports", :original_reports]
+      ]
   }
 
   # Fetches user's distributors, suppliers and order_cycles
-  before_filter :load_data, only: [:customers, :products_and_inventory, :order_cycle_management, :packing]
+  before_filter :load_data, only: [:customers, :products_and_inventory, :order_cycle_management, :packing, :original]
 
   # Render a partial for orders and fulfillment description
-  respond_override :index => { :html => { :success => lambda {
-    @reports[:orders_and_fulfillment][:description] =
-      render_to_string(partial: 'orders_and_fulfillment_description', layout: false, locals: {report_types: REPORT_TYPES[:orders_and_fulfillment]}).html_safe
-    @reports[:products_and_inventory][:description] =
-      render_to_string(partial: 'products_and_inventory_description', layout: false, locals: {report_types: REPORT_TYPES[:products_and_inventory]}).html_safe
-    @reports[:customers][:description] =
-      render_to_string(partial: 'customers_description', layout: false, locals: {report_types: REPORT_TYPES[:customers]}).html_safe
-    @reports[:order_cycle_management][:description] =
-      render_to_string(partial: 'order_cycle_management_description', layout: false, locals: {report_types: REPORT_TYPES[:order_cycle_management]}).html_safe
-    @reports[:packing][:description] =
-        render_to_string(partial: 'packing_description', layout: false, locals: {report_types: REPORT_TYPES[:packing]}).html_safe
-} } }
+  respond_override :index => {:html => {:success => lambda {
+                     @reports[:orders_and_fulfillment][:description] =
+                         render_to_string(partial: 'orders_and_fulfillment_description', layout: false, locals: {report_types: REPORT_TYPES[:orders_and_fulfillment]}).html_safe
+                     @reports[:products_and_inventory][:description] =
+                         render_to_string(partial: 'products_and_inventory_description', layout: false, locals: {report_types: REPORT_TYPES[:products_and_inventory]}).html_safe
+                     @reports[:customers][:description] =
+                         render_to_string(partial: 'customers_description', layout: false, locals: {report_types: REPORT_TYPES[:customers]}).html_safe
+                     @reports[:order_cycle_management][:description] =
+                         render_to_string(partial: 'order_cycle_management_description', layout: false, locals: {report_types: REPORT_TYPES[:order_cycle_management]}).html_safe
+                     @reports[:packing][:description] =
+                         render_to_string(partial: 'packing_description', layout: false, locals: {report_types: REPORT_TYPES[:packing]}).html_safe
+                     # @reports[:original][:description] =
+                     #   render_to_string(partial: 'original_reports_description', layout: false, locals: {report_types: REPORT_TYPES[:original_reports]}).html_safe
+                   }}}
 
 
   # Overide spree reports list.
   def index
+    @reports = authorized_reports
+    respond_with(@reports)
+  end
+
+  def original
     @reports = authorized_reports
     respond_with(@reports)
   end
@@ -195,7 +205,7 @@ Spree::Admin::ReportsController.class_eval do
     @suppliers = permissions.visible_enterprises_for_order_reports.is_primary_producer
 
     @order_cycles = OrderCycle.active_or_complete.
-    involving_managed_distributors_of(spree_current_user).order('orders_close_at DESC')
+        involving_managed_distributors_of(spree_current_user).order('orders_close_at DESC')
 
     @report_types = REPORT_TYPES[:orders_and_fulfillment]
     @report_type = params[:report_type]
@@ -209,7 +219,6 @@ Spree::Admin::ReportsController.class_eval do
     csv_file_name = "#{params[:report_type]}_#{timestamp}.csv"
 
     render_report(@report.header, @table, params[:csv], csv_file_name)
-
   end
 
   def products_and_inventory
@@ -249,7 +258,7 @@ Spree::Admin::ReportsController.class_eval do
     else
       csv_string = CSV.generate do |csv|
         csv << header
-       table.each { |row| csv << row }
+        table.each { |row| csv << row }
       end
       send_data csv_string, :filename => csv_file_name
     end
@@ -285,18 +294,19 @@ Spree::Admin::ReportsController.class_eval do
 
   def authorized_reports
     reports = {
-      :orders_and_distributors => {:name => "Orders And Distributors", :description => "Orders with distributor details"},
-      :bulk_coop => {:name => "Bulk Co-Op", :description => "Reports for Bulk Co-Op orders"},
-      :payments => {:name => "Payment Reports", :description => "Reports for Payments"},
-      :orders_and_fulfillment => {:name => "Orders & Fulfillment Reports", :description => ''},
-      :customers => {:name => "Customers", :description => 'Customer details'},
-      :products_and_inventory => {:name => "Products & Inventory", :description => ''},
-      :sales_total => { :name => "Sales Total", :description => "Sales Total For All Orders" },
-      :users_and_enterprises => { :name => "Users & Enterprises", :description => "Enterprise Ownership & Status" },
-      :order_cycle_management => {:name => "Order Cycle Management", :description => ''},
-      :packing => {:name => "Packing Reports", :description => ''},
-      :sales_tax => { :name => "Sales Tax", :description => "Sales Tax For Orders" },
-      :xero_invoices => { :name => "Xero Invoices", :description => 'Invoices for import into Xero' }
+        :orders_and_distributors => {:name => "Orders And Distributors", :description => "Orders with distributor details"},
+        :bulk_coop => {:name => "Bulk Co-Op", :description => "Reports for Bulk Co-Op orders"},
+        :payments => {:name => "Payment Reports", :description => "Reports for Payments"},
+        :orders_and_fulfillment => {:name => "Orders & Fulfillment Reports", :description => ''},
+        :customers => {:name => "Customers", :description => 'Customer details'},
+        :products_and_inventory => {:name => "Products & Inventory", :description => ''},
+        :sales_total => {:name => "Sales Total", :description => "Sales Total For All Orders"},
+        :users_and_enterprises => {:name => "Users & Enterprises", :description => "Enterprise Ownership & Status"},
+        :order_cycle_management => {:name => "Order Cycle Management", :description => ''},
+        :packing => {:name => "Packing Reports", :description => ''},
+        :sales_tax => {:name => "Sales Tax", :description => "Sales Tax For Orders"},
+        :xero_invoices => {:name => "Xero Invoices", :description => 'Invoices for import into Xero'},
+        :original_reports => {:name => "Original Reports", :description => 'Sales Reports'}
     }
     # Return only reports the user is authorized to view.
     reports.select { |action| can? action, :report }

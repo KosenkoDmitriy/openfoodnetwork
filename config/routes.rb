@@ -156,6 +156,7 @@ end
 
 
 Spree::Core::Engine.routes.prepend do
+  match '/admin/reports/original_reports' => 'admin/reports#original_reports', :as => "original_reports_admin_reports",  :via  => [:get, :post]
   match '/admin/reports/orders_and_distributors' => 'admin/reports#orders_and_distributors', :as => "orders_and_distributors_admin_reports",  :via  => [:get, :post]
   match '/admin/reports/order_cycle_management' => 'admin/reports#order_cycle_management', :as => "order_cycle_management_admin_reports",  :via  => [:get, :post]
   match '/admin/reports/packing' => 'admin/reports#packing', :as => "packing_admin_reports",  :via  => [:get, :post]
