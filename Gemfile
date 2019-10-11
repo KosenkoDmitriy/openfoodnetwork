@@ -121,7 +121,7 @@ group :development do
   gem 'guard-rspec'
   gem 'parallel_tests'
 
-  gem 'ruby-debug-base19x', '~> 0.11.31'
-  gem 'ruby-debug-ide', '~> 0.4.32'
+#  gem 'ruby-debug-base19x', '~> 0.11.31'
+#  gem 'ruby-debug-ide', '~> 0.4.32'
 
 end
